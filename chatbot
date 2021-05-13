@@ -1,0 +1,109 @@
+import pyttsx3
+import speech_recognition as sr
+import datetime
+import wikipedia
+import webbrowser
+import os
+import smtplib
+
+
+
+
+OWNER = "Vyishak"
+#pytts is a module that converts text to speech
+engine = pyttsx3.init("sapi5")# object creation,sapi5 is used in windows for conversion
+voices = engine.getProperty("voices")#getting details of current voice
+engine.setProperty("voice",voices[0].id)#changing index, changes voices. o for male
+
+def speak(text):
+    engine.say(text)#to say the text
+    engine.runAndWait()
+
+def wishme():
+    hour=datetime.datetime.now().hour# gets the time in hour at the moment
+    hour=int(hour)
+    if hour>=0 and hour<=12:
+        speak("good morning"+ OWNER)
+    elif hour>12 and hour<=15:
+        speak("good afternoon"+ OWNER)
+    else:
+        speak("good evening"+ OWNER)
+    speak(" how may i help you")  
+
+
+
+def takeCommand():
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+            #It takes microphone input from the user and returns string output
+        speak("Listening...")
+        audio = r.listen(source)
+
+
+
+    try:
+        speak("Recognizing...")    
+        query = r.recognize_google(audio, language='en-in') #Using google for voice recognition.
+        speak(query)  #User query will be printed.    
+
+    except :
+    # print(e)    
+        speak("Say that again please...")   #Say that again will be printed in case of improper voice 
+        return "None" #None string will be returned
+    return query  
+
+
+speak("initializing steph")
+wishme()
+query = takeCommand().lower()
+
+
+
+    
+
+    
+
+        # Logic for executing tasks based on query
+if 'wikipedia' in query:
+    speak('Searching Wikipedia...')
+    query = query.replace("wikipedia", "")
+    results = wikipedia.summary(query, sentences=2)
+    speak("According to Wikipedia")
+    print(results)
+    speak(results)
+
+elif 'open youtube' in query:
+      #  webbrowser.open("youtube.com")
+  chrome_path = '"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" %s'#to open in google otherwise opens in internet explore
+  url="youtube.com"
+  webbrowser.get(chrome_path).open(url)
+elif 'open google'  in query:
+    webbrowser.open("google.com")#opens in internet explorer
+
+elif 'open stackoverflow' or "stackoverflow" in query:
+    webbrowser.open("stackoverflow.com")   
+
+elif  "open instagram" or "instagram" in query:
+    url="instagram.com"
+    chrome_path = '"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" %s'#to open in google otherwise opens in internet explore
+    webbrowser.get(chrome_path).open(url)
+
+
+
+
+elif 'play music' in query:
+    music_dir = 'C:\\Users\\vyish\\Music'
+    songs = os.listdir(music_dir)
+    print(songs)    
+    os.startfile(os.path.join(music_dir, songs[0]))
+
+elif 'the time' in query:
+    strTime = datetime.datetime.now().strftime("%H:%M:%S")    
+    speak(f"Sir, the time is {strTime}")
+
+else:
+    speak("not present") 
+      
+
+
+
